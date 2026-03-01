@@ -21,16 +21,17 @@ class RAGAgent(BaseAgent):
         context = "\n\n".join(docs)
 
         prompt = f"""
-                    Answer using ONLY the context below.
+                    Use the provided context if it helps answer the question.
+
+                    If context is irrelevant,
+                    answer using your general knowledge.
 
                     Context:
                     {context}
 
                     Question:
                     {query}
-
-                    Answer:
-                """
+                    """
         print("FINAL CONTEXT:\n", context)
         response = llm.generate(prompt)
         print('final response:::',response)

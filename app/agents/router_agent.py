@@ -12,22 +12,48 @@ class RouterAgent:
         print("query:::", query)
 
         routing_prompt = f"""
-You are a router.
+                You are an intelligent router.
 
-Choose which agent should handle the query.
+                Agents:
 
-Agents:
-chat   -> general conversation
-rag    -> document knowledge
-tool   -> actions
-plan   -> multi-step goals
-memory -> questions about previous conversation
+                chat:
+                - general knowledge
+                - definitions
+                - explanations
+                - normal conversation
 
-Return ONLY:
-chat | rag | tool | plan | memory
+                rag:
+                - questions about stored documents
+                - project knowledge
+                - uploaded data
+                - internal information
 
-Query: {query}
-"""
+                tool:
+                - real-world actions or APIs
+                - requires LIVE or REAL-TIME data
+                - weather
+                - filesystem
+                - APIs
+                - external information
+
+                plan:
+                - multi-step goals
+
+
+
+                memory:
+                - questions about previous conversation
+
+                IMPORTANT:
+                Weather queries ALWAYS use tool.
+                
+                Return ONLY:
+                chat | rag | tool | plan | memory
+
+                Query:
+                {query}
+                """
+
 
         decision = llm.generate(routing_prompt).strip().lower()
 
@@ -43,6 +69,10 @@ Query: {query}
 
         elif decision == "rag":
             print("→ RAG AGENT")
+            if "document" not in query.lower()\
+                and "project" not in query.lower()\
+                and "my" not in query.lower():
+                decision = "chat"
             return RAGAgent().run(query)
         
         elif decision == "memory":
